@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบแผนงบประมาณประจำปี 2569</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --info-color: #0891b2;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #312e81 100%);
+            font-family: 'Sarabun', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e3a8a 0%, #312e81 100%);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1050;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 25px 10px;
+        }
+
+        .sidebar-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-title {
+            font-size: 0;
+        }
+
+        .sidebar.collapsed .sidebar-title::before {
+            content: "📊";
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin: 5px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-item {
+            margin: 5px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-link {
+            padding: 15px 10px;
+            justify-content: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar.collapsed .nav-link:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+            font-size: 1.3rem;
+        }
+
+        .nav-text {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Tooltip for collapsed sidebar */
+        .sidebar.collapsed .nav-link::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed .nav-link:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+
+        .main-content {
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 70px;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 290px;
+            z-index: 1060;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-toggle.collapsed {
+            left: 80px;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card.active {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-left-width: 8px;
+        }
+
+        .metric-card.pending { border-left-color: var(--danger-color); }
+        .metric-card.processing { border-left-color: var(--warning-color); }
+        .metric-card.waiting { border-left-color: var(--info-color); }
+        .metric-card.completed { border-left-color: var(--success-color); }
+
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .pending .metric-icon { background: var(--danger-color); }
+        .processing .metric-icon { background: var(--warning-color); }
+        .waiting .metric-icon { background: var(--info-color); }
+        .completed .metric-icon { background: var(--success-color); }
+
+        .data-table {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 14px 12px;
+            font-weight: 700;
+            font-size: 13px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.3px;
+            position: relative;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        /* Column width controls */
+        .table th:nth-child(1) { width: 70%; min-width: 300px; } /* หัวข้อ/ชื่อโครงการ - ขยายให้ใหญ่ขึ้น */
+        .table th:nth-child(2) { width: 7%; } /* ราคารวม/งบประมาณ */
+        .table th:nth-child(3) { width: 5%; } /* ประเภท */
+        .table th:nth-child(4) { width: 3.5%; } /* ไตรมาส 1 */
+        .table th:nth-child(5) { width: 3.5%; } /* ไตรมาส 2 */
+        .table th:nth-child(6) { width: 3.5%; } /* ไตรมาส 3 */
+        .table th:nth-child(7) { width: 3.5%; } /* ไตรมาส 4 */
+        .table th:nth-child(8) { width: 4%; }  /* การจัดการ */
+
+        .table td:nth-child(1) { 
+            width: 70%; 
+            min-width: 300px;
+            white-space: normal !important;
+            word-wrap: break-word;
+            max-width: none !important;
+            overflow: visible !important;
+            text-overflow: initial !important;
+            padding: 16px !important;
+            line-height: 1.4;
+        } 
+        .table td:nth-child(2) { width: 7%; }
+        .table td:nth-child(3) { width: 5%; }
+        .table td:nth-child(4) { width: 3.5%; }
+        .table td:nth-child(5) { width: 3.5%; }
+        .table td:nth-child(6) { width: 3.5%; }
+        .table td:nth-child(7) { width: 3.5%; }
+        .table td:nth-child(8) { width: 4%; }
+
+        .table th:first-child {
+            border-top-left-radius: 23px;
+        }
+
+        .table th:last-child {
+            border-top-right-radius: 23px;
+        }
+
+        .table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
+
+        .table td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+        }
+
+        .table td:first-child {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+            border-radius: 0;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .table tbody tr.responsible-group {
+            background: linear-gradient(135deg, #fef7cd 0%, #fef3c7 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .table tbody tr.responsible-group:hover {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .responsible-text {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-pending { 
+            background: linear-gradient(135deg, #ffb3ba, #ffdfba);
+            color: #8b0000;
+            border-color: rgba(255, 179, 186, 0.5);
+        }
+        
+        .status-processing { 
+            background: linear-gradient(135deg, #ffffba, #bae1ff);
+            color: #b8860b;
+            border-color: rgba(255, 255, 186, 0.5);
+        }
+        
+        .status-waiting { 
+            background: linear-gradient(135deg, #baffc9, #bae1ff);
+            color: #0066cc;
+            border-color: rgba(186, 225, 255, 0.5);
+        }
+        
+        .status-completed { 
+            background: linear-gradient(135deg, #baffc9, #c9ffba);
+            color: #006400;
+            border-color: rgba(186, 255, 201, 0.5);
+        }
+
+        .btn-action {
+            padding: 8px 14px;
+            margin: 2px;
+            border-radius: 12px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .btn-action i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-action:hover i {
+            transform: rotate(360deg);
+        }
+
+        .header-title {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .filter-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-section .form-label {
+            color: white;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #312e81 100%);
+            color: white;
+        }
+
+        .modal-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1f2937;
+            padding: 30px;
+        }
+
+        .modal-footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 8px;
+            color: var(--primary-color);
+            width: 16px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            padding: 14px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .form-control:hover, .form-select:hover {
+            border-color: #9ca3af;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-title i {
+            margin-right: 12px;
+            font-size: 1.3rem;
+        }
+
+        .responsible-group {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.05), rgba(75, 0, 130, 0.05));
+            border-left: 5px solid;
+            border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4) 1;
+            border-radius: 0 12px 12px 0;
+            margin: 2px 0;
+        }
+
+        .responsible-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+            font-weight: 700;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .responsible-header td {
+            padding: 14px 16px !important;
+            font-size: 14px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            text-align: left !important;
+        }
+
+        .responsible-header i {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 6px 8px;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 12px;
+        }
+
+        /* Colorful responsible person groups */
+        .responsible-group-1 { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; 
+            border-left: 4px solid #f59e0b !important;
+        }
+        .responsible-group-2 { 
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important; 
+            border-left: 4px solid #3b82f6 !important;
+        }
+        .responsible-group-3 { 
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important; 
+            border-left: 4px solid #10b981 !important;
+        }
+        .responsible-group-4 { 
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important; 
+            border-left: 4px solid #ec4899 !important;
+        }
+        .responsible-group-5 { 
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important; 
+            border-left: 4px solid #8b5cf6 !important;
+        }
+        .responsible-group-6 { 
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important; 
+            border-left: 4px solid #059669 !important;
+        }
+
+        .responsible-header-1 { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; 
+        }
+        .responsible-header-2 { 
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; 
+        }
+        .responsible-header-3 { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+        }
+        .responsible-header-4 { 
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important; 
+        }
+        .responsible-header-5 { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; 
+        }
+        .responsible-header-6 { 
+            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; 
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .table-responsive {
+                font-size: 12px;
+            }
+
+            .table td {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .table th {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .responsible-text {
+                max-width: 80px;
+            }
+
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+
+            .status-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .table td, .table th {
+                padding: 4px 6px;
+            }
+
+            .responsible-text {
+                max-width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h5 class="sidebar-title">
+                <i class="fas fa-chart-bar me-2"></i>
+                เมนูหลัก
+            </h5>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="#" class="nav-link active" onclick="switchPage('home')" data-tooltip="หน้าแรก">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text">หน้าแรก</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="switchPage('training-internal')" data-tooltip="อบรมภายใน">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="nav-text">อบรมภายใน</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="switchPage('training-external')" data-tooltip="อบรมภายนอก">
+                    <i class="fas fa-plane"></i>
+                    <span class="nav-text">อบรมภายนอก</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fas fa-angle-left"></i>
+    </button>
+
+    <div class="main-content" id="mainContent">
+        <div class="container-fluid">
+            <div class="dashboard-container" id="pageContent">
+                <!-- Content will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="dataModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">เพิ่มรายการใหม่</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dynamic form content will be generated here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" onclick="saveData()">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyUAKmOqHuV3Wg0Kenrlj2cCX6A8HyDYoFdJr1Gri9ISXlJg-wQIr-ipgBsRvlFNWUB/exec';
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 'home';
+        let currentSheet = 'รวม';
+        let currentStatusFilter = null;
+
+        // Page configurations
+        const pageConfigs = {
+            'home': {
+                title: 'ระบบแผนงบประมาณประจำปี 2569',
+                icon: 'fas fa-chart-line',
+                sheet: 'รวม',
+                columns: [
+                    { key: 'topic', label: 'หัวข้อ' },
+                    { key: 'totalPrice', label: 'ราคารวม', format: 'currency' },
+                    { key: 'type', label: 'ประเภท' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', format: 'status' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', format: 'status' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', format: 'status' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', format: 'status' },
+                    { key: 'actions', label: 'การจัดการ', format: 'actions' }
+                ],
+                formFields: [
+                    { key: 'topic', label: 'หัวข้อ', type: 'text', icon: 'fas fa-heading', required: true },
+                    { key: 'contractAge', label: 'อายุสัญญา/ปี', type: 'number', icon: 'fas fa-calendar-alt' },
+                    { key: 'totalPrice', label: 'ราคารวม', type: 'number', icon: 'fas fa-money-bill-wave', step: '0.01' },
+                    { key: 'unitPrice', label: 'ราคาต่อหน่วย', type: 'number', icon: 'fas fa-calculator', step: '0.01' },
+                    { key: 'quantity', label: 'จำนวน', type: 'number', icon: 'fas fa-sort-numeric-up' },
+                    { key: 'type', label: 'ประเภท', type: 'text', icon: 'fas fa-tags' },
+                    { key: 'responsible', label: 'ผู้รับผิดชอบ', type: 'text', icon: 'fas fa-user-tie' },
+                    { key: 'purchasePrice', label: 'ราคาที่จัดซื้อ', type: 'number', icon: 'fas fa-shopping-cart', step: '0.01' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'notes', label: 'หมายเหตุ', type: 'textarea', icon: 'fas fa-sticky-note' }
+                ]
+            },
+            'training-internal': {
+                title: 'อบรมภายใน',
+                icon: 'fas fa-chalkboard-teacher',
+                sheet: 'อบรม-ใน',
+                columns: [
+                    { key: 'projectName', label: 'ชื่อโครงการ' },
+                    { key: 'budget', label: 'งบประมาณ', format: 'currency' },
+                    { key: 'unit', label: 'หน่วยนับ' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', format: 'status' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', format: 'status' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', format: 'status' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', format: 'status' },
+                    { key: 'actions', label: 'การจัดการ', format: 'actions' }
+                ],
+                formFields: [
+                    { key: 'projectName', label: 'ชื่อโครงการ', type: 'text', icon: 'fas fa-project-diagram', required: true },
+                    { key: 'budget', label: 'งบประมาณ', type: 'number', icon: 'fas fa-money-bill-wave', step: '0.01' },
+                    { key: 'unit', label: 'หน่วยนับ', type: 'text', icon: 'fas fa-ruler' },
+                    { key: 'date', label: 'วัน/เดือน/ปี', type: 'date', icon: 'fas fa-calendar' },
+                    { key: 'responsible', label: 'ผู้รับผิดชอบ', type: 'text', icon: 'fas fa-user-tie' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'purchasePrice', label: 'ราคาที่จัดซื้อ', type: 'number', icon: 'fas fa-shopping-cart', step: '0.01' },
+                    { key: 'notes', label: 'หมายเหตุ', type: 'textarea', icon: 'fas fa-sticky-note' }
+                ]
+            },
+            'training-external': {
+                title: 'อบรมภายนอก',
+                icon: 'fas fa-plane',
+                sheet: 'อบรม-นอก',
+                columns: [
+                    { key: 'projectName', label: 'ชื่อโครงการ' },
+                    { key: 'total', label: 'รวม', format: 'currency' },
+                    { key: 'unit', label: 'หน่วยนับ' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', format: 'status' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', format: 'status' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', format: 'status' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', format: 'status' },
+                    { key: 'actions', label: 'การจัดการ', format: 'actions' }
+                ],
+                formFields: [
+                    { key: 'projectName', label: 'ชื่อโครงการ', type: 'text', icon: 'fas fa-project-diagram', required: true },
+                    { key: 'registrationFee', label: 'ค่าลงทะเบียน', type: 'number', icon: 'fas fa-ticket-alt', step: '0.01' },
+                    { key: 'allowance', label: 'ค่าเบี้ยเลี้ยง', type: 'number', icon: 'fas fa-utensils', step: '0.01' },
+                    { key: 'accommodation', label: 'ค่าที่พัก', type: 'number', icon: 'fas fa-bed', step: '0.01' },
+                    { key: 'travel', label: 'ค่าเดินทาง', type: 'number', icon: 'fas fa-car', step: '0.01' },
+                    { key: 'otherExpenses', label: 'ค่าใช้จ่ายอื่นๆ', type: 'number', icon: 'fas fa-plus-circle', step: '0.01' },
+                    { key: 'unit', label: 'หน่วยนับ', type: 'text', icon: 'fas fa-ruler' },
+                    { key: 'total', label: 'รวม', type: 'number', icon: 'fas fa-calculator', step: '0.01' },
+                    { key: 'date', label: 'วัน/เดือน/ปี', type: 'date', icon: 'fas fa-calendar' },
+                    { key: 'responsible', label: 'ผู้รับผิดชอบ', type: 'text', icon: 'fas fa-user-tie' },
+                    { key: 'quarter1', label: 'ไตรมาส 1', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter2', label: 'ไตรมาส 2', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter3', label: 'ไตรมาส 3', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'quarter4', label: 'ไตรมาส 4', type: 'select', icon: 'fas fa-calendar-check' },
+                    { key: 'purchasePrice', label: 'ราคาที่จัดซื้อ', type: 'number', icon: 'fas fa-shopping-cart', step: '0.01' },
+                    { key: 'notes', label: 'หมายเหตุ', type: 'textarea', icon: 'fas fa-sticky-note' }
+                ]
+            }
+        };
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set home as active by default
+            document.querySelector('.nav-link[onclick="switchPage(\'home\')"]').classList.add('active');
+            switchPage('home');
+        });
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const menuToggle = document.getElementById('menuToggle');
+            const toggleIcon = menuToggle.querySelector('i');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('sidebar-collapsed');
+            menuToggle.classList.toggle('collapsed');
+            
+            // Update toggle icon
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.className = 'fas fa-angle-right';
+            } else {
+                toggleIcon.className = 'fas fa-angle-left';
+            }
+        }
+
+        // Switch page
+        function switchPage(page) {
+            currentPage = page;
+            currentSheet = pageConfigs[page].sheet;
+            currentStatusFilter = null; // Reset status filter
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav link
+            const targetLink = document.querySelector(`.nav-link[onclick="switchPage('${page}')"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+            }
+            
+            // Auto-collapse sidebar after selection
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const menuToggle = document.getElementById('menuToggle');
+            const toggleIcon = menuToggle.querySelector('i');
+            
+            if (!sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                menuToggle.classList.add('collapsed');
+                toggleIcon.className = 'fas fa-angle-right';
+            }
+            
+            // Load page content
+            loadPageContent();
+            loadData();
+        }
+
+        // Load page content
+        function loadPageContent() {
+            const config = pageConfigs[currentPage];
+            const pageContent = document.getElementById('pageContent');
+            
+            pageContent.innerHTML = `
+                <h1 class="header-title">
+                    <i class="${config.icon} me-3"></i>
+                    ${config.title}
+                </h1>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">กรองตามผู้รับผิดชอบ:</label>
+                            <select class="form-select" id="responsibleFilter">
+                                <option value="">ทั้งหมด</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">กรองตามประเภท:</label>
+                            <select class="form-select" id="typeFilter">
+                                <option value="">ทั้งหมด</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary me-2" onclick="loadData()">
+                                <i class="fas fa-sync-alt me-2"></i>รีเฟรช
+                            </button>
+                            <button class="btn btn-success" onclick="showAddModal()">
+                                <i class="fas fa-plus me-2"></i>เพิ่มรายการ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Cards -->
+                <div class="row" id="metricsContainer">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card pending" onclick="filterByStatus('หน่วยงานยังไม่ส่งเรื่อง', this)">
+                            <div class="metric-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3 class="mb-1" id="pendingCount">0</h3>
+                            <p class="text-muted mb-0">หน่วยงานยังไม่ส่งเรื่อง</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card processing" onclick="filterByStatus('อยู่ระหว่างดำเนินการ', this)">
+                            <div class="metric-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h3 class="mb-1" id="processingCount">0</h3>
+                            <p class="text-muted mb-0">อยู่ระหว่างดำเนินการ</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card waiting" onclick="filterByStatus('รอส่งมอบ', this)">
+                            <div class="metric-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <h3 class="mb-1" id="waitingCount">0</h3>
+                            <p class="text-muted mb-0">รอส่งมอบ</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card completed" onclick="filterByStatus('ส่งมอบแล้ว', this)">
+                            <div class="metric-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3 class="mb-1" id="completedCount">0</h3>
+                            <p class="text-muted mb-0">ส่งมอบแล้ว</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    ${config.columns.map(col => `<th>${col.label}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <tr>
+                                    <td colspan="${config.columns.length}" class="text-center">
+                                        <div class="loading">
+                                            <div class="spinner"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load data from Google Sheets
+        async function loadData() {
+            try {
+                showLoading();
+                const response = await fetch(`${API_URL}?action=getData&sheet=${currentSheet}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    allData = data.data;
+                    filteredData = [...allData];
+                    updateFilters();
+                    updateMetrics();
+                    renderTable();
+                } else {
+                    throw new Error(data.message || 'Failed to load data');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showErrorNotification('ไม่สามารถโหลดข้อมูลได้: ' + error.message);
+            }
+        }
+
+        // Show loading state
+        function showLoading() {
+            document.getElementById('dataTableBody').innerHTML = `
+                <tr>
+                    <td colspan="11" class="text-center">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('dataTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${message}
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Update filter dropdowns
+        function updateFilters() {
+            const responsibleFilter = document.getElementById('responsibleFilter');
+            const typeFilter = document.getElementById('typeFilter');
+            
+            // Get unique values
+            const responsibleOptions = [...new Set(allData.map(item => item.responsible).filter(Boolean))];
+            const typeOptions = [...new Set(allData.map(item => item.type).filter(Boolean))];
+            
+            // Update responsible filter
+            responsibleFilter.innerHTML = '<option value="">ทั้งหมด</option>';
+            responsibleOptions.forEach(option => {
+                responsibleFilter.innerHTML += `<option value="${option}">${option}</option>`;
+            });
+            
+            // Update type filter
+            typeFilter.innerHTML = '<option value="">ทั้งหมด</option>';
+            typeOptions.forEach(option => {
+                typeFilter.innerHTML += `<option value="${option}">${option}</option>`;
+            });
+            
+            // Add event listeners
+            responsibleFilter.addEventListener('change', applyFilters);
+            typeFilter.addEventListener('change', applyFilters);
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const responsibleFilter = document.getElementById('responsibleFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            
+            filteredData = allData.filter(item => {
+                const matchResponsible = !responsibleFilter || item.responsible === responsibleFilter;
+                const matchType = !typeFilter || item.type === typeFilter;
+                
+                // Apply status filter if active
+                let matchStatus = true;
+                if (currentStatusFilter) {
+                    matchStatus = ['quarter1', 'quarter2', 'quarter3', 'quarter4'].some(quarter => 
+                        item[quarter] === currentStatusFilter
+                    );
+                }
+                
+                return matchResponsible && matchType && matchStatus;
+            });
+            
+            updateMetrics();
+            renderTable();
+        }
+
+        // Filter by status (metric card click)
+        function filterByStatus(status, cardElement) {
+            // Remove active class from all cards
+            document.querySelectorAll('.metric-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Toggle filter
+            if (currentStatusFilter === status) {
+                // If clicking the same status, clear filter
+                currentStatusFilter = null;
+            } else {
+                // Set new status filter
+                currentStatusFilter = status;
+                cardElement.classList.add('active');
+            }
+            
+            // Apply filters
+            applyFilters();
+        }
+
+        // Update metrics cards
+        function updateMetrics() {
+            const metrics = {
+                pending: 0,
+                processing: 0,
+                waiting: 0,
+                completed: 0
+            };
+            
+            filteredData.forEach(item => {
+                ['quarter1', 'quarter2', 'quarter3', 'quarter4'].forEach(quarter => {
+                    const status = item[quarter];
+                    if (status === 'หน่วยงานยังไม่ส่งเรื่อง') metrics.pending++;
+                    else if (status === 'อยู่ระหว่างดำเนินการ') metrics.processing++;
+                    else if (status === 'รอส่งมอบ') metrics.waiting++;
+                    else if (status === 'ส่งมอบแล้ว') metrics.completed++;
+                });
+            });
+            
+            document.getElementById('pendingCount').textContent = metrics.pending;
+            document.getElementById('processingCount').textContent = metrics.processing;
+            document.getElementById('waitingCount').textContent = metrics.waiting;
+            document.getElementById('completedCount').textContent = metrics.completed;
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('dataTableBody');
+            const config = pageConfigs[currentPage];
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${config.columns.length}" class="text-center text-muted">
+                            <i class="fas fa-inbox me-2"></i>
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Group data by responsible person
+            const groupedData = {};
+            filteredData.forEach(item => {
+                const responsible = item.responsible || 'ไม่ระบุผู้รับผิดชอบ';
+                if (!groupedData[responsible]) {
+                    groupedData[responsible] = [];
+                }
+                groupedData[responsible].push(item);
+            });
+            
+            let html = '';
+            let groupIndex = 0;
+            Object.keys(groupedData).forEach(responsible => {
+                groupIndex++;
+                const colorClass = ((groupIndex - 1) % 6) + 1;
+                
+                // Add group header
+                html += `
+                    <tr class="responsible-header responsible-header-${colorClass}">
+                        <td colspan="${config.columns.length}">
+                            <i class="fas fa-user-tie"></i>
+                            ผู้รับผิดชอบ: ${responsible} (${groupedData[responsible].length} รายการ)
+                        </td>
+                    </tr>
+                `;
+                
+                // Add group items
+                groupedData[responsible].forEach(item => {
+                    html += `<tr class="responsible-group responsible-group-${colorClass}">`;
+                    config.columns.forEach(col => {
+                        if (col.format === 'currency') {
+                            html += `<td title="${item[col.key] || ''}">${item[col.key] ? formatCurrency(item[col.key]) : '-'}</td>`;
+                        } else if (col.format === 'status') {
+                            html += `<td>${getStatusBadge(item[col.key])}</td>`;
+                        } else if (col.format === 'actions') {
+                            html += `
+                                <td>
+                                    <button class="btn-action btn-edit" onclick="editItem(${item.rowIndex})" title="แก้ไข">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" onclick="deleteItem(${item.rowIndex})" title="ลบ">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            `;
+                        } else {
+                            const value = item[col.key] || '';
+                            html += `<td title="${value}">${value || '-'}</td>`;
+                        }
+                    });
+                    html += '</tr>';
+                });
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            if (!status) return '<span class="status-badge">-</span>';
+            
+            let className = 'status-badge ';
+            if (status === 'หน่วยงานยังไม่ส่งเรื่อง') className += 'status-pending';
+            else if (status === 'อยู่ระหว่างดำเนินการ') className += 'status-processing';
+            else if (status === 'รอส่งมอบ') className += 'status-waiting';
+            else if (status === 'ส่งมอบแล้ว') className += 'status-completed';
+            
+            return `<span class="${className}">${status}</span>`;
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('th-TH', {
+                style: 'currency',
+                currency: 'THB'
+            }).format(amount);
+        }
+
+        // Generate dynamic modal form
+        function generateModalForm() {
+            const config = pageConfigs[currentPage];
+            const modalBody = document.querySelector('#dataModal .modal-body');
+            
+            let formHTML = `
+                <form id="dataForm">
+                    <input type="hidden" id="editRowIndex" value="">
+                    <div class="row">
+            `;
+            
+            config.formFields.forEach(field => {
+                const colClass = field.type === 'textarea' ? 'col-12' : 'col-md-6';
+                formHTML += `
+                    <div class="${colClass}">
+                        <div class="form-group">
+                            <label class="form-label"><i class="${field.icon}"></i>${field.label}</label>
+                `;
+                
+                if (field.type === 'select') {
+                    formHTML += `
+                        <select class="form-select" id="${field.key}" ${field.required ? 'required' : ''}>
+                            <option value="">เลือกสถานะ</option>
+                            <option value="หน่วยงานยังไม่ส่งเรื่อง">หน่วยงานยังไม่ส่งเรื่อง</option>
+                            <option value="อยู่ระหว่างดำเนินการ">อยู่ระหว่างดำเนินการ</option>
+                            <option value="รอส่งมอบ">รอส่งมอบ</option>
+                            <option value="ส่งมอบแล้ว">ส่งมอบแล้ว</option>
+                        </select>
+                    `;
+                } else if (field.type === 'textarea') {
+                    formHTML += `
+                        <textarea class="form-control" id="${field.key}" rows="3" ${field.required ? 'required' : ''}></textarea>
+                    `;
+                } else {
+                    formHTML += `
+                        <input type="${field.type}" class="form-control" id="${field.key}" 
+                               ${field.step ? `step="${field.step}"` : ''} 
+                               ${field.required ? 'required' : ''}>
+                    `;
+                }
+                
+                formHTML += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            formHTML += `
+                    </div>
+                </form>
+            `;
+            
+            modalBody.innerHTML = formHTML;
+        }
+
+        // Show add modal
+        function showAddModal() {
+            generateModalForm();
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i>เพิ่มรายการใหม่';
+            document.getElementById('dataForm').reset();
+            document.getElementById('editRowIndex').value = '';
+            new bootstrap.Modal(document.getElementById('dataModal')).show();
+        }
+
+        // Edit item
+        function editItem(rowIndex) {
+            const item = allData.find(data => data.rowIndex === rowIndex);
+            if (!item) return;
+            
+            generateModalForm();
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i>แก้ไขรายการ';
+            document.getElementById('editRowIndex').value = rowIndex;
+            
+            // Fill form fields dynamically
+            const config = pageConfigs[currentPage];
+            config.formFields.forEach(field => {
+                const element = document.getElementById(field.key);
+                if (element) {
+                    element.value = item[field.key] || '';
+                }
+            });
+            
+            new bootstrap.Modal(document.getElementById('dataModal')).show();
+        }
+
+        // Save data
+        async function saveData() {
+            try {
+                // Show loading state
+                const saveBtn = document.querySelector('#dataModal .btn-primary');
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>กำลังบันทึก...';
+                saveBtn.disabled = true;
+
+                // Collect form data dynamically
+                const config = pageConfigs[currentPage];
+                const formData = {};
+                
+                config.formFields.forEach(field => {
+                    const element = document.getElementById(field.key);
+                    if (element) {
+                        formData[field.key] = element.value;
+                    }
+                });
+                
+                const rowIndex = document.getElementById('editRowIndex').value;
+                const action = rowIndex ? 'updateData' : 'addData';
+                
+                if (rowIndex) {
+                    formData.rowIndex = parseInt(rowIndex);
+                }
+
+                // Create form data for Google Apps Script
+                const postData = new FormData();
+                postData.append('action', action);
+                postData.append('sheet', currentSheet);
+                postData.append('data', JSON.stringify(formData));
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: postData
+                });
+                
+                const result = await response.json();
+                
+                // Reset button state
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+                    await loadData();
+                    showSuccessNotification(rowIndex ? 'แก้ไขข้อมูลสำเร็จ!' : 'บันทึกข้อมูลสำเร็จ!');
+                } else {
+                    throw new Error(result.message || 'Failed to save data');
+                }
+            } catch (error) {
+                console.error('Error saving data:', error);
+                
+                // Reset button state
+                const saveBtn = document.querySelector('#dataModal .btn-primary');
+                saveBtn.innerHTML = 'บันทึก';
+                saveBtn.disabled = false;
+                
+                showErrorNotification('ไม่สามารถบันทึกข้อมูลได้: ' + error.message);
+            }
+        }
+
+        // Delete item
+        async function deleteItem(rowIndex) {
+            if (!confirm('คุณต้องการลบรายการนี้หรือไม่?')) return;
+            
+            try {
+                // Create form data for Google Apps Script
+                const postData = new FormData();
+                postData.append('action', 'deleteData');
+                postData.append('sheet', currentSheet);
+                postData.append('rowIndex', rowIndex);
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: postData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadData();
+                    showSuccessNotification('ลบข้อมูลสำเร็จ!');
+                } else {
+                    throw new Error(result.message || 'Failed to delete data');
+                }
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                showErrorNotification('ไม่สามารถลบข้อมูลได้: ' + error.message);
+            }
+        }
+
+        // Show success notification
+        function showSuccessNotification(message) {
+            // Create and show a temporary success alert
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show position-fixed success-animation';
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 350px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);';
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-3 text-success" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong>สำเร็จ!</strong><br>
+                        <small>${message}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // Show error notification
+        function showErrorNotification(message) {
+            // Create and show a temporary error alert
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 350px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);';
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-3 text-danger" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong>เกิดข้อผิดพลาด!</strong><br>
+                        <small>${message}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+            
+            // Auto remove after 6 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 300);
+                }
+            }, 6000);
+        }
+
+        // Show success message (legacy function for compatibility)
+        function showSuccess(message) {
+            showSuccessNotification(message);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97598b38e1627993',t:'MTc1NjI3NjQ3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
